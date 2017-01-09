@@ -1,6 +1,7 @@
 const SlackBot = require('slackbots');
 const _ = require('lodash');
 const axios = require('axios');
+const Gdax = require('gdax');
 
 // create a bot
 const bot = new SlackBot({
@@ -20,11 +21,19 @@ bot.on('message', (message) => {
     }
     const channel = _getChannel(message.channel);
 
+    if (message.text.indexOf("today") > -1) {
+      return _package24HrData()
+        .then((message) => {
+          return _postMessage(message, channel);
+        });
+    }
+
     _getBitcoinPrice()
-      .then((bitcoinData) => {
-        _postMessage(bitcoinData, channel);
+      .then((priceData) => {
+        const price = _formatPrice(priceData.price);
+        const message = `Blessings child. The price of bitcoin is currently $${price}.`
+        return _postMessage(message, channel);
       })
-      .catch(console.err);
 })
 
 function _bootstrap() {
@@ -39,14 +48,13 @@ function _bootstrap() {
       bot._groups = response.groups;
     })
     .catch(console.err);
+
+  bot.gdaxClient = new Gdax.PublicClient();
+  console.log('initialized..')
 }
 
-function _postMessage(bitcoinData, channelData) {
-  const { price, market } = bitcoinData;
-  const formattedPrice = _.parseInt(price).toFixed(2);
+function _postMessage(message, channelData) {
   const { channel_type, channel } = channelData;
-  const message = `The bitcoin price is currently $${formattedPrice} on ${market}`;
-
   if (channel_type === 'public') {
     bot.postMessageToChannel(channel, message, config);
   } else {
@@ -54,24 +62,52 @@ function _postMessage(bitcoinData, channelData) {
   }
 }
 
-function _getBitcoinPrice(exchange='bitstamp') {
-  return axios.get('https://api.cryptonator.com/api/full/btc-usd')
-    .then((response) => {
-      const formattedExchange = exchange.toLowerCase();
-      const _exchange = _.find(response.data.ticker.markets, (marketData) => {
-        return marketData.market.toLowerCase() === formattedExchange;
-      });
-      if (_exchange) {
-        return _exchange;
+function _package24HrData() {
+  return Promise.all([_get24HrData(),_getBitcoinPrice()])
+    .then((priceData) => {
+      const openPrice = _formatPrice(priceData[0].open);
+      const currentPrice = _formatPrice(priceData[1].price);
+      const difference = Math.abs(openPrice - currentPrice);
+      const percentChange = calculatePercentage(openPrice, difference);
+
+      if (openPrice < currentPrice) {
+        return `The devout shall inherit the moon. Bitcoin has risen ${percentChange} percent from $${openPrice} to $${currentPrice} in the last 24 hours. Blessings be upon you, my child.`;
       }
-      return {
-        market: 'average',
-        price: response.data.ticker.price
-      }
-    });
+      return `Feel the deep thrust of my wrath into your loins, prole! Bitcoin has fallen ${percentChange} percent from $${openPrice} to $${currentPrice} in the last 24 hours.`;
+    })
 }
 
+function calculatePercentage(initialAmt, difference) {
+  return (difference / initialAmt * 100).toFixed(0);
+}
 
+function _get24HrData(exchange) {
+  return new Promise((resolve, reject) => {
+    bot.gdaxClient.getProduct24HrStats((err, response, data) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(data);
+      }
+    });
+  });
+}
+
+function _getBitcoinPrice(exchange='bitstamp') {
+  return new Promise((resolve, reject) => {
+    bot.gdaxClient.getProductTicker((err, response, data) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(data);
+      }
+    })
+  });
+}
+
+function _formatPrice(price) {
+    return _.parseInt(price).toFixed(2);
+}
 function _isValidMessage(message) {
   return message.type === 'message' && !!message.text
 }
