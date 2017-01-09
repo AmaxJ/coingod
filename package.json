@@ -17,6 +17,7 @@
     "lodash": "^4.17.4"
   },
   "dependencies": {
+    "gdax": "^0.3.0",
     "slackbots": "^1.0.2"
   }
 }
