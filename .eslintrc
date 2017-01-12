@@ -1,0 +1,11 @@
+{
+  "extends": "eslint-config-airbnb-base",
+  "rules" : {
+      "indent": ["error", 4],
+      "no-underscore-dangle": "off",
+      "consistent-return": "off",
+      "arrow-body-style": "off",
+      "comma-dangle": ["error", "never"],
+      "no-console": "off"
+      }
+}
