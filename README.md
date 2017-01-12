@@ -1,0 +1,1 @@
+#Coing - A Bitcoin slackbot
