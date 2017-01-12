@@ -48,10 +48,10 @@ class BitcoinBot extends SlackBot {
         }
         if (channelType === 'public') {
             return this.postMessageToChannel(channel, message, this.config)
-                .fail(console.err);
+                .fail(console.error);
         }
         return this.postMessageToGroup(channel, message, this.config)
-            .fail(console.err);
+            .fail(console.error);
     }
 
     package24HrData() {
