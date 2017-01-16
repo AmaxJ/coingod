@@ -63,7 +63,7 @@ class BitcoinBot extends SlackBot {
                 const percentChange = utils.calculatePercentage(openPrice, difference);
 
                 if (openPrice < currentPrice) {
-                    return `The devout shall inherit the moon. Bitcoin has risen ${percentChange} percent from $${openPrice} to $${currentPrice} in the last 24 hours. Blessings be upon you, my child.`;
+                    return `The devout shall inherit the moon. Bitcoin has risen ${percentChange} percent from $${openPrice} to $${currentPrice} in the last 24 hours.`;
                 }
                 return `Feel the deep thrust of my wrath into your loins, prole! Bitcoin has fallen ${percentChange} percent from $${openPrice} to $${currentPrice} in the last 24 hours.`;
             });
