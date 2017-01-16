@@ -2,7 +2,7 @@
   "name": "coing",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node ./src/index.js",
@@ -19,5 +19,8 @@
     "gdax": "^0.3.0",
     "lodash": "^4.17.4",
     "slackbots": "^1.0.2"
+},
+"engines": {
+    "node": "6.9.4"
   }
 }
