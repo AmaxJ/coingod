@@ -1,0 +1,38 @@
+{
+    "coingod": {
+        "bitcoin" : {
+            "current_price" : [
+                "Blessings child. The price of bitcoin is currently $<%= price %>.",
+                "Did someone say my name? Bitcoin is $<%= price %> at the moment.",
+                "Hey there! Bitcoin is trading at $<%= price %> right now."
+            ],
+            "price_change": {
+                "increase": [
+                    "The devout shall inherit the moon. Bitcoin has risen <%= percentChange %> percent from $<%= openPrice %> to $<%= currentPrice %> in the last 24 hours.",
+                    "I find myself pleased. I have willed the human value of bitcoin upwards by <%= percentChange %> percent from $<%= openPrice %> to $<%= currentPrice %> in the last 24 hours.",
+                    "Do not fret over the price mortal! My generosity knows no bounds: I have raised bitcoin by <%= percentChange %> percent from $<%= openPrice %> to $<%= currentPrice %> in the last 24 hours."
+                ],
+                "decrease": [
+                    "Feel the deep thrust of my wrath into your loins, prole! Bitcoin has fallen <%= percentChange %> percent from $<%= openPrice %> to $<%= currentPrice %> in the last 24 hours.",
+                    "You mortals are crass and weak. May the fall of bitcoin <%= percentChange %> percent from $<%= openPrice %> to $<%= currentPrice %> strike deep into your hearts and wallets.",
+                    "Fool! The value of bitcoin is infinite! Although not on GDAX. Bitcoin has dropped <%= percentChange %> percent from $<%= openPrice %> to $<%= currentPrice %>."
+                ]
+            }
+        }
+    },
+    "default" : {
+        "bitcoin" : {
+            "current_price" : [
+                "The price of bitcoin is currently $<%= price %>."
+            ],
+            "price_change": {
+                "increase": [
+                    "Bitcoin has risen <%= percentChange %> percent from $<%= openPrice %> to $<%= currentPrice %> in the last 24 hours."
+                ],
+                "decrease": [
+                    "Bitcoin has fallen <%= percentChange %> percent from $<%= openPrice %> to $<%= currentPrice %> in the last 24 hours."
+                ]
+            }
+        }
+    }
+}
