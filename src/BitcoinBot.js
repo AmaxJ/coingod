@@ -15,6 +15,7 @@ class BitcoinBot extends SlackBot {
         super(config);
         this.config = { as_user: true };
         this.gdaxClient = new Gdax.PublicClient();
+        this.namePattern = new RegExp(this.name, 'i');
         this.template = templates[this.name] ? templates[this.name] : templates.default;
         this.on('message', this.handleMessage);
         console.log(this.name, 'initialized...');
@@ -30,12 +31,11 @@ class BitcoinBot extends SlackBot {
         }
         const channel = this._getChannel(slackEvent.channel);
         // If 'today' and 'coingod' are mentioned in the same comment, post BTC's 24 hr performance
-        if (slackEvent.text.indexOf('today') > -1) {
+        if (slackEvent.text.match(/today/i)) {
             return this.package24HrData()
                 .then(message => this._postMessage(message, channel))
                 .catch(console.error);
         }
-
         this.getBitcoinPrice(channel)
           .then((priceData) => {
               const price = {
@@ -131,8 +131,7 @@ class BitcoinBot extends SlackBot {
      * @return {boolean}
      */
     botCalled(text) {
-        const formattedName = this.name.toLowerCase();
-        return text.toLowerCase().indexOf(formattedName) > -1;
+        return text.match(this.namePattern) !== null;
     }
 
 
