@@ -1,6 +1,6 @@
 {
   "name": "coing",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "",
   "main": "./src/index.js",
   "scripts": {
@@ -17,10 +17,11 @@
   },
   "dependencies": {
     "gdax": "^0.3.0",
+    "html-entities": "^1.2.0",
     "lodash": "^4.17.4",
     "slackbots": "^1.0.2"
-},
-"engines": {
+  },
+  "engines": {
     "node": "6.9.4"
   }
 }

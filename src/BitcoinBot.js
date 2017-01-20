@@ -14,6 +14,7 @@ class BitcoinBot extends SlackBot {
     constructor(config) {
         super(config);
         this.config = { as_user: true };
+        this.isAddingDialog = false;
         this.gdaxClient = new Gdax.PublicClient();
         this.namePattern = new RegExp(this.name, 'i');
         this.template = templates[this.name] ? templates[this.name] : templates.default;
@@ -30,23 +31,97 @@ class BitcoinBot extends SlackBot {
             return;
         }
         const channel = this._getChannel(slackEvent.channel);
+
+        if (this.isAddingDialog) {
+            return this.handleAddTemplate(slackEvent, channel);
+        }
+
+        if (slackEvent.text.match(/add/i)) {
+            return this.handleAddTemplatePrompt(channel);
+        }
         // If 'today' and 'coingod' are mentioned in the same comment, post BTC's 24 hr performance
         if (slackEvent.text.match(/today/i)) {
-            return this.package24HrData()
-                .then(message => this._postMessage(message, channel))
-                .catch(console.error);
+            return this.btc24HourPerformanceResponse(channel);
         }
-        this.getBitcoinPrice(channel)
-          .then((priceData) => {
-              const price = {
-                  price: utils.formatPrice(priceData.price)
-              };
-              const template = utils.getRandom(this.template.bitcoin.current_price);
-              const compileMessage = _.template(template);
-              const message = compileMessage(price);
-              return this._postMessage(message, channel);
-          })
-          .catch(console.error);
+
+        return this.defaultResponse(channel);
+    }
+
+    /**
+     * defaultResponse
+     * @param  {object} channel
+     * @return {promise}
+     */
+    defaultResponse(channel) {
+        return this.getBitcoinPrice(channel)
+            .then((priceData) => {
+                const price = {
+                    price: utils.formatPrice(priceData.price)
+                };
+                const template = utils.getRandom(this.template.bitcoin.current_price);
+                const compileMessage = _.template(template);
+                const message = compileMessage(price);
+                return this._postMessage(message, channel);
+            })
+            .catch(console.error);
+    }
+
+
+    /**
+     * daysPerformanceResponse
+     * @param  {object} channel
+     * @return {promise}
+     */
+    btc24HourPerformanceResponse(channel) {
+        return this.package24HrData()
+            .then(message => this._postMessage(message, channel))
+            .catch(console.error);
+    }
+
+    /**
+     * handleAddTemplatePrompt
+     * @param  {object} channel
+     * @return {promise}
+     */
+    handleAddTemplatePrompt(channel) {
+        this._postMessage(templates.default.add.prompt, channel)
+        .then(() => {
+            return this._postMessage(templates.default.add.example, channel);
+        })
+        .then(() => {
+            return this._postMessage(templates.default.add.labelsHeader, channel);
+        })
+        .then(() => {
+            return this._postMessage(templates.default.add.labels, channel);
+        });
+        this.isAddingDialog = true;
+    }
+
+    /**
+     * handleAddTemplate
+     * @param  {object} slackEvent
+     * @param  {object} channel
+     * @return {promise}
+     */
+    handleAddTemplate(slackEvent, channel) {
+        const template = utils.parseMessageForTemplate(slackEvent.text);
+        const label = utils.parseMessageForLabel(slackEvent.text);
+
+        if (!template || !label) {
+            this.isAddingDialog = false;
+            return this._postMessage(templates.default.add.error, channel);
+        }
+
+        const templatesArray = utils.getTemplatesAtPath(this.template, label);
+
+        if (!templatesArray) {
+            this.isAddingDialog = false;
+            return this._postMessage(templates.default.add.error, channel);
+        }
+
+        templatesArray.push(template);
+        this.isAddingDialog = false;
+        return this._postMessage(templates.default.add.success, channel);
     }
 
     /**
@@ -70,7 +145,7 @@ class BitcoinBot extends SlackBot {
 
     /**
      * Packages bitcoin 24hr price movement into a message.
-     * @returns {string}
+     * @returns {promise}
      */
     package24HrData() {
         return Promise.all([this.get24HrData(), this.getBitcoinPrice()])
