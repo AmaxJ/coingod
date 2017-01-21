@@ -6,6 +6,7 @@
       "consistent-return": "off",
       "arrow-body-style": "off",
       "comma-dangle": ["error", "never"],
-      "no-console": "off"
+      "no-console": "off",
+      "no-use-before-define": "off"
       }
 }
