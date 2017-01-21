@@ -25,6 +25,7 @@ class BitcoinBot extends SlackBot {
     /**
      * Listener for slack events.
      * @param {object} slackEvent
+     * @return {promise}
      */
     handleMessage(slackEvent) {
         if (slackEvent.type !== 'message' || !slackEvent.text || !this.botCalled(slackEvent.text)) {
@@ -66,9 +67,8 @@ class BitcoinBot extends SlackBot {
             .catch(console.error);
     }
 
-
     /**
-     * daysPerformanceResponse
+     * btc24HourPerformanceResponse
      * @param  {object} channel
      * @return {promise}
      */
@@ -84,17 +84,17 @@ class BitcoinBot extends SlackBot {
      * @return {promise}
      */
     handleAddTemplatePrompt(channel) {
-        this._postMessage(templates.default.add.prompt, channel)
-        .then(() => {
-            return this._postMessage(templates.default.add.example, channel);
-        })
-        .then(() => {
-            return this._postMessage(templates.default.add.labelsHeader, channel);
-        })
-        .then(() => {
-            return this._postMessage(templates.default.add.labels, channel);
-        });
         this.isAddingDialog = true;
+        return this._postMessage(templates.default.add.prompt, channel)
+            .then(() => {
+                return this._postMessage(templates.default.add.example, channel);
+            })
+            .then(() => {
+                return this._postMessage(templates.default.add.labelsHeader, channel);
+            })
+            .then(() => {
+                return this._postMessage(templates.default.add.labels, channel);
+            });
     }
 
     /**
@@ -199,7 +199,6 @@ class BitcoinBot extends SlackBot {
         });
     }
 
-
     /**
      * returns a boolean for whether the text contains the name of the bot.
      * @param  {string} text
@@ -208,7 +207,6 @@ class BitcoinBot extends SlackBot {
     botCalled(text) {
         return text.match(this.namePattern) !== null;
     }
-
 
     /**
      * returns an object with the channel name and type
