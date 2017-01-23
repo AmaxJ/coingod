@@ -18,8 +18,25 @@
                     "Fool! The value of bitcoin is infinite! Although not on GDAX. Bitcoin has dropped <%= percentChange %> percent from $<%= openPrice %> to $<%= currentPrice %>."
                 ]
             }
+        },
+        "ether" : {
+            "current_price" : [
+                "The price of Ether is currently $<%= price %>."
+            ],
+            "current_price" : [
+                "The price of ether is currently $<%= price %>."
+            ],
+            "price_change": {
+                "increase": [
+                    "Ether has risen <%= percentChange %> percent from $<%= openPrice %> to $<%= currentPrice %> in the last 24 hours."
+                ],
+                "decrease": [
+                    "Ether has fallen <%= percentChange %> percent from $<%= openPrice %> to $<%= currentPrice %> in the last 24 hours."
+                ]
+            }
         }
     },
+
     "default" : {
         "bitcoin" : {
             "current_price" : [
@@ -34,11 +51,27 @@
                 ]
             }
         },
+        "ether" : {
+            "current_price" : [
+                "The price of Ether is currently $<%= price %>."
+            ],
+            "current_price" : [
+                "The price of ether is currently $<%= price %>."
+            ],
+            "price_change": {
+                "increase": [
+                    "Ether has risen <%= percentChange %> percent from $<%= openPrice %> to $<%= currentPrice %> in the last 24 hours."
+                ],
+                "decrease": [
+                    "Ether has fallen <%= percentChange %> percent from $<%= openPrice %> to $<%= currentPrice %> in the last 24 hours."
+                ]
+            }
+        },
         "add" : {
             "prompt" : "Hey! Sounds like you want to add some dialog. Here's how it works: \n The *next* time you say my name, include the label of the context you're adding dialog for between label tags *<lbl></lbl>*, \n and the dialog itself between template tags *<tmp></tmp>*. \n You can include valid variables in your template with the syntax: *<%= variableName %>*. \n For example:" ,
             "example": "```'WhateverYourBotIsNamed' <lbl>bitcoin.price_change.increase<lbl> <tmp>Woah, btc is up by <%= percentChange %> percent today!</tmp>```",
             "labelsHeader": "Available labels and variables:",
-            "labels" : "```label: 'bitcoin.current_price', variables: [ price ]\n label: 'bitcoin.price_change.increase', variables: [ percentChange, openPrice, currentPrice ]\n label: 'bitcoin.price_change.decrease', variables: [ percentChange, openPrice, currentPrice ]```",
+            "labels" : "```label: 'bitcoin.current_price', variables: [ price ]\n label: 'bitcoin.price_change.increase', variables: [ percentChange, openPrice, currentPrice ]\n label: 'bitcoin.price_change.decrease', variables: [ percentChange, openPrice, currentPrice ] \n label: 'ether.current_price', variables: [ price ]\n label: 'ether.price_change.increase', variables: [ percentChange, openPrice, currentPrice ]\n label: 'ether.price_change.decrease', variables: [ percentChange, openPrice, currentPrice ]```",
             "error": "Looks like something went wrong. Try running the `add` command again.",
             "success": "Your template was added successfully!"
         }
