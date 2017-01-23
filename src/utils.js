@@ -1,5 +1,8 @@
 const _ = require('lodash');
+const axios = require('axios');
 const Entities = require('html-entities').AllHtmlEntities;
+const constants = require('./constants.js');
+
 
 const utils = {
 
@@ -8,7 +11,7 @@ const utils = {
     },
 
     formatPrice: (price) => {
-        return _.parseInt(price).toFixed(2);
+        return parseFloat(price).toFixed(2);
     },
 
     getRandom: (arr) => {
@@ -31,6 +34,18 @@ const utils = {
             return false;
         }
         return templates;
+    },
+
+    getEtherPriceData() {
+        return axios.get(constants.GDAX_ETH_ENDPOINT);
+    },
+
+    package24HrData(priceData) {
+        const openPrice = this.formatPrice(priceData.open);
+        const currentPrice = this.formatPrice(priceData.last);
+        const difference = Math.abs(openPrice - currentPrice);
+        const percentChange = this.calculatePercentage(openPrice, difference);
+        return { openPrice, currentPrice, difference, percentChange };
     }
 
 };

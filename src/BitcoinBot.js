@@ -40,9 +40,16 @@ class BitcoinBot extends SlackBot {
         if (slackEvent.text.match(/add/i)) {
             return this.handleAddTemplatePrompt(channel);
         }
-        // If 'today' and 'coingod' are mentioned in the same comment, post BTC's 24 hr performance
+
         if (slackEvent.text.match(/today/i)) {
+            if (slackEvent.text.match(/eth/i)) {
+                return this.eth24HourPerformanceResponse(channel);
+            }
             return this.btc24HourPerformanceResponse(channel);
+        }
+
+        if (slackEvent.text.match(/eth/i)) {
+            return this.ethPriceResponse(channel);
         }
 
         return this.defaultResponse(channel);
@@ -54,12 +61,26 @@ class BitcoinBot extends SlackBot {
      * @return {promise}
      */
     defaultResponse(channel) {
-        return this.getBitcoinPrice(channel)
+        return this.getBitcoinPriceData()
             .then((priceData) => {
                 const price = {
-                    price: utils.formatPrice(priceData.price)
+                    price: utils.formatPrice(priceData.last)
                 };
                 const template = utils.getRandom(this.template.bitcoin.current_price);
+                const compileMessage = _.template(template);
+                const message = compileMessage(price);
+                return this._postMessage(message, channel);
+            })
+            .catch(console.error);
+    }
+
+    ethPriceResponse(channel) {
+        utils.getEtherPriceData()
+            .then((response) => {
+                const price = {
+                    price: utils.formatPrice(response.data.last)
+                };
+                const template = utils.getRandom(this.template.ether.current_price);
                 const compileMessage = _.template(template);
                 const message = compileMessage(price);
                 return this._postMessage(message, channel);
@@ -73,7 +94,24 @@ class BitcoinBot extends SlackBot {
      * @return {promise}
      */
     btc24HourPerformanceResponse(channel) {
-        return this.package24HrData()
+        return this.getBitcoinPriceData()
+            .then((priceData) => {
+                return this.compile24HrMessage(priceData, 'bitcoin');
+            })
+            .then(message => this._postMessage(message, channel))
+            .catch(console.error);
+    }
+
+    /**
+     * eth24HourPerformanceResponse
+     * @param  {type} channel
+     * @return {promise}
+     */
+    eth24HourPerformanceResponse(channel) {
+        return utils.getEtherPriceData()
+            .then((response) => {
+                return this.compile24HrMessage(response.data, 'ether');
+            })
             .then(message => this._postMessage(message, channel))
             .catch(console.error);
     }
@@ -144,34 +182,10 @@ class BitcoinBot extends SlackBot {
     }
 
     /**
-     * Packages bitcoin 24hr price movement into a message.
-     * @returns {promise}
-     */
-    package24HrData() {
-        return Promise.all([this.get24HrData(), this.getBitcoinPrice()])
-            .then((priceData) => {
-                const openPrice = utils.formatPrice(priceData[0].open);
-                const currentPrice = utils.formatPrice(priceData[1].price);
-                const difference = Math.abs(openPrice - currentPrice);
-                const percentChange = utils.calculatePercentage(openPrice, difference);
-
-                let template;
-
-                if (openPrice < currentPrice) {
-                    template = utils.getRandom(this.template.bitcoin.price_change.increase);
-                } else {
-                    template = utils.getRandom(this.template.bitcoin.price_change.decrease);
-                }
-                const compileMessage = _.template(template);
-                return compileMessage({ percentChange, openPrice, currentPrice });
-            });
-    }
-
-    /**
-     * Returns promise for bitcoin market price data from 24 hours ago.
+     * Returns promise for bitcoin price data over the last 24 hours.
      * @returns {Promise}
      */
-    get24HrData() {
+    getBitcoinPriceData() {
         return new Promise((resolve, reject) => {
             this.gdaxClient.getProduct24HrStats((err, response, data) => {
                 if (err) {
@@ -184,19 +198,31 @@ class BitcoinBot extends SlackBot {
     }
 
     /**
-     * Returns promise for current bitcoin market price data.
-     * @returns {Promise}
+     * compile24HrMessage
+     * @param  {object} priceData
+     * @param  {string} currency
+     * @return {string}
      */
-    getBitcoinPrice() {
-        return new Promise((resolve, reject) => {
-            this.gdaxClient.getProductTicker((err, response, data) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(data);
-                }
-            });
-        });
+    compile24HrMessage(priceData, currency = 'bitcoin') {
+        const {
+            openPrice,
+            currentPrice,
+            percentChange
+        } = utils.package24HrData(priceData);
+        let selectedCurrency;
+        let template;
+        if (currency !== 'bitcoin' && currency !== 'ether') {
+            selectedCurrency = 'bitcoin';
+        } else {
+            selectedCurrency = currency;
+        }
+        if (openPrice < currentPrice) {
+            template = utils.getRandom(this.template[selectedCurrency].price_change.increase);
+        } else {
+            template = utils.getRandom(this.template[selectedCurrency].price_change.decrease);
+        }
+        const compileMessage = _.template(template);
+        return compileMessage({ percentChange, openPrice, currentPrice });
     }
 
     /**
