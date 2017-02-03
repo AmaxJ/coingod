@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const SlackBot = require('slackbots');
 const Gdax = require('gdax');
-const utils = require('./utils');
+const utils = require('../utils/utils.js');
 const templates = require('./templates/templates.json');
 
 

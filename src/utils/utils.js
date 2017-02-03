@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const axios = require('axios');
 const Entities = require('html-entities').AllHtmlEntities;
-const constants = require('./constants.js');
+const constants = require('../constants.js');
 
 
 const utils = {
