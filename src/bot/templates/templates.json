@@ -10,21 +10,20 @@
                 "increase": [
                     "The devout shall inherit the moon. Bitcoin has risen <%= percentChange %> percent from $<%= openPrice %> to $<%= currentPrice %> in the last 24 hours.",
                     "I find myself pleased. I have willed the human value of bitcoin upwards by <%= percentChange %> percent from $<%= openPrice %> to $<%= currentPrice %> in the last 24 hours.",
-                    "Do not fret over the price mortal! My generosity knows no bounds: I have raised bitcoin by <%= percentChange %> percent from $<%= openPrice %> to $<%= currentPrice %> in the last 24 hours."
+                    "Do not fret over the price mortal! My generosity knows no bounds: I have raised bitcoin by <%= percentChange %> percent from $<%= openPrice %> to $<%= currentPrice %> in the last 24 hours.",
+                    "https://media.giphy.com/media/6yWV529bDk3WU/giphy.gif"
                 ],
                 "decrease": [
                     "Feel the deep thrust of my wrath into your loins, prole! Bitcoin has fallen <%= percentChange %> percent from $<%= openPrice %> to $<%= currentPrice %> in the last 24 hours.",
                     "You mortals are crass and weak. May the fall of bitcoin <%= percentChange %> percent from $<%= openPrice %> to $<%= currentPrice %> strike deep into your hearts and wallets.",
-                    "Fool! The value of bitcoin is infinite! Although not on GDAX. Bitcoin has dropped <%= percentChange %> percent from $<%= openPrice %> to $<%= currentPrice %>."
+                    "Fool! The value of bitcoin is infinite! Although not on GDAX. Bitcoin has dropped <%= percentChange %> percent from $<%= openPrice %> to $<%= currentPrice %>.",
+                    "https://media4.giphy.com/media/12iLLOrKtgyiCQ/200.gif#111"
                 ]
             }
         },
         "ether" : {
             "current_price" : [
-                "The price of Ether is currently $<%= price %>."
-            ],
-            "current_price" : [
-                "The price of ether is currently $<%= price %>."
+                "Hah! Ether? The price of Ether is currently $<%= price %>."
             ],
             "price_change": {
                 "increase": [
