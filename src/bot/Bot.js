@@ -216,7 +216,7 @@ class BitcoinBot extends SlackBot {
         } else {
             selectedCurrency = currency;
         }
-        if (openPrice < currentPrice) {
+        if (_.toNumber(openPrice) < _.toNumber(currentPrice)) {
             template = utils.getRandom(this.template[selectedCurrency].price_change.increase);
         } else {
             template = utils.getRandom(this.template[selectedCurrency].price_change.decrease);
