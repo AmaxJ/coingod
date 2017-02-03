@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const SlackBot = require('slackbots');
 const Gdax = require('gdax');
-const utils = require('./utils');
+const utils = require('../utils/utils.js');
 const templates = require('./templates/templates.json');
 
 
@@ -216,7 +216,7 @@ class BitcoinBot extends SlackBot {
         } else {
             selectedCurrency = currency;
         }
-        if (openPrice < currentPrice) {
+        if (_.toNumber(openPrice) < _.toNumber(currentPrice)) {
             template = utils.getRandom(this.template[selectedCurrency].price_change.increase);
         } else {
             template = utils.getRandom(this.template[selectedCurrency].price_change.decrease);
