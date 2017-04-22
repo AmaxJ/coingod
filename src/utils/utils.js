@@ -40,6 +40,10 @@ const utils = {
         return axios.get(constants.GDAX_ETH_ENDPOINT);
     },
 
+    getBitcoinPriceData() {
+        return axios.get(constants.GDAX_BTC_ENDPOINT);
+    },
+
     package24HrData(priceData) {
         const openPrice = this.formatPrice(priceData.open);
         const currentPrice = this.formatPrice(priceData.last);
