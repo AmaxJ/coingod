@@ -40,15 +40,31 @@ const utils = {
         return axios.get(constants.GDAX_ETH_ENDPOINT);
     },
 
+    getBitcoinPriceData() {
+        return axios.get(constants.GDAX_BTC_ENDPOINT);
+    },
+
     package24HrData(priceData) {
         const openPrice = this.formatPrice(priceData.open);
         const currentPrice = this.formatPrice(priceData.last);
         const difference = Math.abs(openPrice - currentPrice);
         const percentChange = this.calculatePercentage(openPrice, difference);
         return { openPrice, currentPrice, difference, percentChange };
+    },
+
+    namesValidCoin(message) {
+        return _.find(constants.COINS, (coin) => {
+            const pattern = new RegExp(coin, 'i');
+            return message.match(pattern);
+        });
+    },
+
+    fetchFromCoinMarketCap(coin) {
+        return axios.get(`https://api.coinmarketcap.com/v1/ticker/${coin}`);
     }
 
 };
+
 
 const entities = new Entities();
 

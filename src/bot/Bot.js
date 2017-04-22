@@ -1,6 +1,5 @@
 const _ = require('lodash');
 const SlackBot = require('slackbots');
-const Gdax = require('gdax');
 const utils = require('../utils/utils.js');
 const templates = require('./templates/templates.json');
 
@@ -15,7 +14,6 @@ class BitcoinBot extends SlackBot {
         super(config);
         this.config = { as_user: true };
         this.isAddingDialog = false;
-        this.gdaxClient = new Gdax.PublicClient();
         this.namePattern = new RegExp(this.name, 'i');
         this.template = templates[this.name] ? templates[this.name] : templates.default;
         this.on('message', this.handleMessage);
@@ -45,14 +43,70 @@ class BitcoinBot extends SlackBot {
             if (slackEvent.text.match(/eth/i)) {
                 return this.eth24HourPerformanceResponse(channel);
             }
+            const altCoin = utils.namesValidCoin(slackEvent.text);
+            if (altCoin) {
+                if (altCoin === 'golem') {
+                    return this.alt24HourPerformanceResponse('golem-network-tokens', channel);
+                }
+                return this.alt24HourPerformanceResponse(altCoin, channel);
+            }
             return this.btc24HourPerformanceResponse(channel);
         }
 
         if (slackEvent.text.match(/eth/i)) {
             return this.ethPriceResponse(channel);
         }
-
+        const altCoin = utils.namesValidCoin(slackEvent.text);
+        if (altCoin) {
+            if (altCoin === 'golem') {
+                return this.altCurrentPriceResponse('golem-network-tokens', channel);
+            }
+            return this.altCurrentPriceResponse(altCoin, channel);
+        }
         return this.defaultResponse(channel);
+    }
+
+    altCurrentPriceResponse(coin, channel) {
+        return utils.fetchFromCoinMarketCap(coin)
+            .then((response) => {
+                const data = {
+                    name: response.data[0].name,
+                    price: utils.formatPrice(response.data[0].price_usd)
+                };
+                const template = utils.getRandom(this.template.altcoin.current_price);
+                const compileMessage = _.template(template);
+                const message = compileMessage(data);
+                return this._postMessage(message, channel);
+            })
+            .catch(console.error);
+    }
+
+    alt24HourPerformanceResponse(coin, channel) {
+        return utils.fetchFromCoinMarketCap(coin)
+            .then((response) => {
+                const data = {
+                    name: response.data[0].name,
+                    percentChange: response.data[0].percent_change_24h,
+                    currentPrice: utils.formatPrice(response.data[0].price_usd)
+                };
+                const negativePercentage = data.percentChange[0] === '-';
+                const priceChange = negativePercentage ? 'decrease' : 'increase';
+                const template = utils.getRandom(this.template.altcoin.price_change[priceChange]);
+                const compileMessage = _.template(template);
+                const message = compileMessage(data);
+                return this._postMessage(message, channel);
+            })
+            .catch(console.error);
+    }
+
+    _currentPriceResponse(response, channel, currency) {
+        const price = {
+            price: utils.formatPrice(response.data.last)
+        };
+        const template = utils.getRandom(this.template[currency].current_price);
+        const compileMessage = _.template(template);
+        const message = compileMessage(price);
+        return this._postMessage(message, channel);
     }
 
     /**
@@ -61,15 +115,9 @@ class BitcoinBot extends SlackBot {
      * @return {promise}
      */
     defaultResponse(channel) {
-        return this.getBitcoinPriceData()
-            .then((priceData) => {
-                const price = {
-                    price: utils.formatPrice(priceData.last)
-                };
-                const template = utils.getRandom(this.template.bitcoin.current_price);
-                const compileMessage = _.template(template);
-                const message = compileMessage(price);
-                return this._postMessage(message, channel);
+        return utils.getBitcoinPriceData()
+            .then((response) => {
+                return this._currentPriceResponse(response, channel, 'bitcoin');
             })
             .catch(console.error);
     }
@@ -77,13 +125,7 @@ class BitcoinBot extends SlackBot {
     ethPriceResponse(channel) {
         utils.getEtherPriceData()
             .then((response) => {
-                const price = {
-                    price: utils.formatPrice(response.data.last)
-                };
-                const template = utils.getRandom(this.template.ether.current_price);
-                const compileMessage = _.template(template);
-                const message = compileMessage(price);
-                return this._postMessage(message, channel);
+                return this._currentPriceResponse(response, channel, 'ether');
             })
             .catch(console.error);
     }
@@ -94,9 +136,9 @@ class BitcoinBot extends SlackBot {
      * @return {promise}
      */
     btc24HourPerformanceResponse(channel) {
-        return this.getBitcoinPriceData()
-            .then((priceData) => {
-                return this.compile24HrMessage(priceData, 'bitcoin');
+        return utils.getBitcoinPriceData()
+            .then((response) => {
+                return this.compile24HrMessage(response.data, 'bitcoin');
             })
             .then(message => this._postMessage(message, channel))
             .catch(console.error);
@@ -179,22 +221,6 @@ class BitcoinBot extends SlackBot {
         }
         return this.postMessageToGroup(channel, message, this.config)
             .fail(console.error);
-    }
-
-    /**
-     * Returns promise for bitcoin price data over the last 24 hours.
-     * @returns {Promise}
-     */
-    getBitcoinPriceData() {
-        return new Promise((resolve, reject) => {
-            this.gdaxClient.getProduct24HrStats((err, response, data) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(data);
-                }
-            });
-        });
     }
 
     /**
