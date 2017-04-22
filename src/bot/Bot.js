@@ -43,14 +43,60 @@ class BitcoinBot extends SlackBot {
             if (slackEvent.text.match(/eth/i)) {
                 return this.eth24HourPerformanceResponse(channel);
             }
+            const altCoin = utils.namesValidCoin(slackEvent.text);
+            if (altCoin) {
+                if (altCoin === 'golem') {
+                    return this.alt24HourPerformanceResponse('golem-network-tokens', channel);
+                }
+                return this.alt24HourPerformanceResponse(altCoin, channel);
+            }
             return this.btc24HourPerformanceResponse(channel);
         }
 
         if (slackEvent.text.match(/eth/i)) {
             return this.ethPriceResponse(channel);
         }
-
+        const altCoin = utils.namesValidCoin(slackEvent.text);
+        if (altCoin) {
+            if (altCoin === 'golem') {
+                return this.altCurrentPriceResponse('golem-network-tokens', channel);
+            }
+            return this.altCurrentPriceResponse(altCoin, channel);
+        }
         return this.defaultResponse(channel);
+    }
+
+    altCurrentPriceResponse(coin, channel) {
+        return utils.fetchFromCoinMarketCap(coin)
+            .then((response) => {
+                const data = {
+                    name: response.data[0].name,
+                    price: utils.formatPrice(response.data[0].price_usd)
+                };
+                const template = utils.getRandom(this.template.altcoin.current_price);
+                const compileMessage = _.template(template);
+                const message = compileMessage(data);
+                return this._postMessage(message, channel);
+            })
+            .catch(console.error);
+    }
+
+    alt24HourPerformanceResponse(coin, channel) {
+        return utils.fetchFromCoinMarketCap(coin)
+            .then((response) => {
+                const data = {
+                    name: response.data[0].name,
+                    percentChange: response.data[0].percent_change_24h,
+                    currentPrice: utils.formatPrice(response.data[0].price_usd)
+                };
+                const negativePercentage = data.percentChange[0] === '-';
+                const priceChange = negativePercentage ? 'decrease' : 'increase';
+                const template = utils.getRandom(this.template.altcoin.price_change[priceChange]);
+                const compileMessage = _.template(template);
+                const message = compileMessage(data);
+                return this._postMessage(message, channel);
+            })
+            .catch(console.error);
     }
 
     _currentPriceResponse(response, channel, currency) {
@@ -75,7 +121,6 @@ class BitcoinBot extends SlackBot {
             })
             .catch(console.error);
     }
-
 
     ethPriceResponse(channel) {
         utils.getEtherPriceData()

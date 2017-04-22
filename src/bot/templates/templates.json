@@ -31,6 +31,19 @@
                     "Ether has fallen <%= percentChange %> percent from $<%= openPrice %> to $<%= currentPrice %> in the last 24 hours."
                 ]
             }
+        },
+        "altcoin": {
+            "current_price" : [
+                "The price of <%= name %> is currently $<%= price %>."
+            ],
+            "price_change": {
+                "increase": [
+                    "<%= name %> has risen <%= percentChange %> percent to $<%= currentPrice %> in the last 24 hours."
+                ],
+                "decrease": [
+                    "<%= name %> has fallen <%= percentChange %> percent to $<%= currentPrice %> in the last 24 hours."
+                ]
+            }
         }
     },
 
@@ -61,6 +74,19 @@
                 ],
                 "decrease": [
                     "Ether has fallen <%= percentChange %> percent from $<%= openPrice %> to $<%= currentPrice %> in the last 24 hours."
+                ]
+            }
+        },
+        "altcoin": {
+            "current_price" : [
+                "The price of <%= name %> is currently $<%= price %>."
+            ],
+            "price_change": {
+                "increase": [
+                    "<%= name %> has risen <%= percentChange %> percent to $<%= currentPrice %> in the last 24 hours."
+                ],
+                "decrease": [
+                    "<%= name %> has fallen <%= percentChange %> percent to $<%= currentPrice %> in the last 24 hours."
                 ]
             }
         },

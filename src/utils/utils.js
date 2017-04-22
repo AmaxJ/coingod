@@ -50,9 +50,21 @@ const utils = {
         const difference = Math.abs(openPrice - currentPrice);
         const percentChange = this.calculatePercentage(openPrice, difference);
         return { openPrice, currentPrice, difference, percentChange };
+    },
+
+    namesValidCoin(message) {
+        return _.find(constants.COINS, (coin) => {
+            const pattern = new RegExp(coin, 'i');
+            return message.match(pattern);
+        });
+    },
+
+    fetchFromCoinMarketCap(coin) {
+        return axios.get(`https://api.coinmarketcap.com/v1/ticker/${coin}`);
     }
 
 };
+
 
 const entities = new Entities();
 
