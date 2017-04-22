@@ -63,7 +63,23 @@ class BitcoinBot extends SlackBot {
             }
             return this.altCurrentPriceResponse(altCoin, channel);
         }
+
+        if (slackEvent.text.match(/news/i)) {
+            return utils.fetchNewsFromCoindesk()
+                .then((news) => {
+                    return this.newsResponse(news, channel);
+                })
+                .catch(console.error);
+        }
         return this.defaultResponse(channel);
+    }
+
+    newsResponse(newsArray, channel) {
+        let message = '*The latest crypto news:* \n';
+        _.each(newsArray, (news, index) => {
+            message += `${index + 1}. *${news.title}* \n${news.link}\n`;
+        });
+        return this._postMessage(message, channel);
     }
 
     altCurrentPriceResponse(coin, channel) {

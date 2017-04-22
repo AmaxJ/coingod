@@ -2,6 +2,7 @@ const _ = require('lodash');
 const axios = require('axios');
 const Entities = require('html-entities').AllHtmlEntities;
 const constants = require('../constants.js');
+const cheerio = require('cheerio');
 
 
 const utils = {
@@ -61,6 +62,23 @@ const utils = {
 
     fetchFromCoinMarketCap(coin) {
         return axios.get(`https://api.coinmarketcap.com/v1/ticker/${coin}`);
+    },
+
+    fetchNewsFromCoindesk() {
+        return axios.get('http://www.coindesk.com/category/news/')
+            .then((response) => {
+                const $ = cheerio.load(response.data);
+                return $('#content').children()
+                    .map((index, element) => {
+                        const anchor = $(element).find('.fade');
+                        return {
+                            title: anchor.attr('title'),
+                            link: anchor.attr('href')
+                        };
+                    })
+                    .get()
+                    .slice(0, 5);
+            });
     }
 
 };
