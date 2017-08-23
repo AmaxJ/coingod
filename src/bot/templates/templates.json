@@ -21,27 +21,40 @@
         },
         "ether" : {
             "current_price" : [
-                "The price of Ether is currently $<%= price %>."
+                "I hear your prayer, mortal. Ether is currently $<%= price %>.",
+                "Your cries are heard my child, Ether trades at the mortal price of $<%= price %>.",
+                "The value of Ethereum is infinite, unlike my patience for mortals. Alas, a single ether is worth <%= price %> of your human 'dollars.'"
             ],
             "price_change": {
                 "increase": [
-                    "Ether has risen <%= percentChange %> percent from $<%= openPrice %> to $<%= currentPrice %> in the last 24 hours."
+                    "I reward your sacrifice with great bounty! Ether has risen <%= percentChange %> percent from $<%= openPrice %> to $<%= currentPrice %> in the last 24 hours.",
+                    "I have released my divine seed into the blockchain, surging the price of Ethereum by <%= percentChange %> percent from $<%= openPrice %> to $<%= currentPrice %> in the last 24 hours.",
+                    "The boldness you show to even utter my name amuses me, mortal. I in turn have raised the price of Ether by <%= percentChange %> percent from $<%= openPrice %> to $<%= currentPrice %> in the last 24 hours."
                 ],
                 "decrease": [
+                    "Today I give you the gift of pain, Mortal. It is only by knowing pain, that you may one day know bliss. I have cast the price of Ether down <%= percentChange %> percent from $<%= openPrice %> to $<%= currentPrice %> since the last moon.",
+                    "Feel my disdain, mortal. Ether has fallen <%= percentChange %> percent from $<%= openPrice %> to $<%= currentPrice %> in the last 24 hours.",
                     "Ether has fallen <%= percentChange %> percent from $<%= openPrice %> to $<%= currentPrice %> in the last 24 hours."
                 ]
             }
         },
         "altcoin": {
             "current_price" : [
-                "The price of <%= name %> is currently $<%= price %>."
+                "The false coin called <%= name %> is currently $<%= price %>.",
+                "Only mortal trash would pray to me for the price of the base token, <%= name %>. Yet I am generous. It trades at $<%= price %>.",
+                "The corrupt token the mortals call <%= name %> is currently $<%= price %>."
             ],
             "price_change": {
                 "increase": [
-                    "<%= name %> has risen <%= percentChange %> percent to $<%= currentPrice %> in the last 24 hours."
+                    "The excrement you call <%= name %> has risen <%= percentChange %> percent to $<%= currentPrice %> in the last 24 hours.",
+                    "My current mood is festive mortal, so I have allowed the corrupt token you call <%= name %> to rise <%= percentChange %> percent to $<%= currentPrice %> in the last 24 hours."
+
                 ],
                 "decrease": [
-                    "<%= name %> has fallen <%= percentChange %> percent to $<%= currentPrice %> in the last 24 hours."
+                    "The detritus called <%= name %> has fallen <%= percentChange %> percent to $<%= currentPrice %> in the last 24 hours.",
+                    "The sewege coin mortal garbage calls <%= name %> has fallen <%= percentChange %> percent to $<%= currentPrice %> in the last 24 hours.",
+                    "False tokens shall be your downfall. <%= name %> has fallen <%= percentChange %> percent to $<%= currentPrice %> in the last 24 hours."
+
                 ]
             }
         }
